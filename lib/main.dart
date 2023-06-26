@@ -1,11 +1,16 @@
+/// https://console.firebase.google.com/u/0/
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   // Move material app from MyApp template to here to avoid unnecessary cost of
   // rebuliding on each hot reload
   runApp(
     MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Notes',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: false,
@@ -54,25 +59,66 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Register'),
       ),
-      body: Column(
-        children: [
-          TextField(
-            decoration: const InputDecoration(hintText: 'Email'),
-            controller: _email,
-          ),
-          TextField(
-            decoration: const InputDecoration(hintText: 'Password'),
-            controller: _password,
-          ),
-          TextButton(
-            // The register button has an asynchronous callback function because
-            // we need to authenticate the user using Firebase. Authentication
-            // does not necessarily happen instananeously because we can use third
-            // party SSO solutions like Apple and Twitter.
-            onPressed: () async => {},
-            child: const Text('Register'),
-          ),
-        ],
+      // A future builder waits until the defined 'future' has completed before
+      // building the widget for display
+      body: FutureBuilder(
+        // In this case, the future is to initialize the Firebase app with
+        // default options to each platform
+        future: Firebase.initializeApp(
+            options: DefaultFirebaseOptions.currentPlatform),
+        // The builder has parameters of the context and snapshot. The context
+        // is the app's current state. The snapshot is the result of the
+        // future; it is a way to get the results of the future's computation,
+        // i.e. did it start? did it fail? is it in progress? did it terminate
+        // successfully
+        builder: (context, snapshot) {
+          return switch (snapshot.connectionState) {
+            // We only return the sign-in widget view if the future is
+            // completely finished
+            ConnectionState.done => Column(
+                children: [
+                  // The username and password fields have a few settings that are standard
+                  // for a higher quality user experience
+                  TextField(
+                    decoration: const InputDecoration(hintText: 'Email'),
+                    controller: _email,
+                    keyboardType: TextInputType.emailAddress,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                  ),
+                  TextField(
+                    decoration: const InputDecoration(hintText: 'Password'),
+                    controller: _password,
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                  ),
+                  TextButton(
+                    // The register button has an asynchronous callback function
+                    // because we need to authenticate the user using Firebase.
+                    // Authentication does not necessarily happen instananeously
+                    // because we can use third party SSO solutions like Apple and
+                    // Twitter. Here, we use FirebaseAuth to create a user with the
+                    // given email and password
+                    onPressed: () async {
+                      // Before we can register the user, we need to initialize Firebase
+                      // based on the current platform. Moreover, we need to tell
+                      // Firebase the authentication method
+                      await FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                              email: _email.text, password: _password.text);
+                    },
+                    child: const Text('Register'),
+                  ),
+                ],
+              ),
+            // If the future is not finished processing, then simply print a
+            // loading screen
+            _ => const Center(
+                child: Text('Loading...'),
+              ),
+          };
+        },
       ),
     );
   }
