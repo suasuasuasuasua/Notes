@@ -25,7 +25,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -69,15 +72,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'flutter-notes-26836.appspot.com',
     iosClientId: '61816856359-lhag864fupq4mr056cqebde52ggkrhn7.apps.googleusercontent.com',
     iosBundleId: 'com.example.notesApp',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAmjHcEnwgjq_Y-usCQ-OLFlik8wnbH1zI',
-    appId: '1:61816856359:ios:5065c60c4aab2949a9d302',
-    messagingSenderId: '61816856359',
-    projectId: 'flutter-notes-26836',
-    storageBucket: 'flutter-notes-26836.appspot.com',
-    iosClientId: '61816856359-qli70ltqj50f3riqf60d4v4qqh8k38pn.apps.googleusercontent.com',
-    iosBundleId: 'com.example.notesApp.RunnerTests',
   );
 }
