@@ -8,15 +8,17 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // Move material app from MyApp template to here to avoid unnecessary cost of
   // rebuliding on each hot reload
-  runApp(
-    MaterialApp(
-      title: 'Notes',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: false,
-      ),
-      home: const HomePage(),
+  runApp(buildApp());
+}
+
+Widget buildApp() {
+  return MaterialApp(
+    title: 'Notes',
+    theme: ThemeData(
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+      useMaterial3: false,
     ),
+    home: const HomePage(),
   );
 }
 
@@ -79,21 +81,26 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   // The username and password fields have a few settings that are standard
                   // for a higher quality user experience
-                  TextField(
-                    decoration: const InputDecoration(hintText: 'Email'),
+                  // TODO: Add validators
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Email'),
                     controller: _email,
+                    key: const Key('Username Field'),
                     keyboardType: TextInputType.emailAddress,
                     enableSuggestions: false,
                     autocorrect: false,
                   ),
-                  TextField(
-                    decoration: const InputDecoration(hintText: 'Password'),
+                  // TODO: Add validators
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Password'),
                     controller: _password,
+                    key: const Key('Password Field'),
                     obscureText: true,
                     enableSuggestions: false,
                     autocorrect: false,
                   ),
-                  TextButton(
+                  const SizedBox(height: 10),
+                  ElevatedButton(
                     // The register button has an asynchronous callback function
                     // because we need to authenticate the user using Firebase.
                     // Authentication does not necessarily happen instananeously
@@ -115,7 +122,7 @@ class _HomePageState extends State<HomePage> {
             // If the future is not finished processing, then simply print a
             // loading screen
             _ => const Center(
-                child: Text('Loading...'),
+                child: CircularProgressIndicator(),
               ),
           };
         },
