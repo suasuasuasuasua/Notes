@@ -1,5 +1,7 @@
 # Notes
 
+[![Flutter Application CI](https://github.com/suasuasuasuasua/Notes/actions/workflows/main.yml/badge.svg)](https://github.com/suasuasuasuasua/Notes/actions/workflows/main.yml)
+
 A new Flutter project.
 
 ## Getting Started
