@@ -23,6 +23,8 @@ jobs:
     - uses: dart-lang/setup-dart@v1
       with:
         sdk: stable
+    - run: dart --version
+    - run: flutter --version
     - run: flutter pub get
     - run: flutter test
     - run: flutter build web
@@ -39,6 +41,8 @@ jobs:
     - uses: dart-lang/setup-dart@v1
       with:
         sdk: stable
+    - run: dart --version
+    - run: flutter --version
     - run: flutter pub get
     - run: flutter test
     - run: flutter build ios --release --no-codesign
@@ -58,6 +62,8 @@ jobs:
     - uses: dart-lang/setup-dart@v1
       with:
         sdk: stable
+    - run: dart --version
+    - run: flutter --version 
     - run: flutter pub get
     - run: flutter test
     - run: flutter build apk
