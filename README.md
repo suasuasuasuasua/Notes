@@ -1,6 +1,7 @@
 # Notes
 
-[![Flutter Application CI](https://github.com/suasuasuasuasua/Notes/actions/workflows/main.yml/badge.svg)](https://github.com/suasuasuasuasua/Notes/actions/workflows/main.yml)
+| [![Flutter Application CI](https://github.com/suasuasuasuasua/Notes/actions/workflows/main.yml/badge.svg)](https://github.com/suasuasuasuasua/Notes/actions/workflows/main.yml) | [![Gh-Pages](https://github.com/suasuasuasuasua/Notes/actions/workflows/web.yml/badge.svg?branch=main)](https://github.com/suasuasuasuasua/Notes/actions/workflows/web.yml) |
+|-|-|
 
 A new Flutter project.
 
