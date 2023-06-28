@@ -32,33 +32,36 @@ class HomePage extends StatefulWidget {
 }
 
 mixin WidgetBuilders {
-  Row middleAlignBuilder(Widget w) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        const Spacer(),
-        Expanded(child: w),
-        const Spacer(),
-      ],
-    );
-  }
-
-  TextFormField textFormBuilder(String label, TextEditingController controller,
-      String key, String? Function(String?) validator,
+  Widget textFormBuilder(
+      BuildContext context,
+      String label,
+      TextEditingController controller,
+      String key,
+      String? Function(String?) validator,
       {bool hidden = false}) {
-    return TextFormField(
-      decoration: InputDecoration(
-        floatingLabelStyle: const TextStyle(fontSize: 11),
-        labelText: label,
-        filled: true,
-      ),
-      controller: controller,
-      key: Key(key),
-      validator: validator,
-      keyboardType: TextInputType.emailAddress,
-      enableSuggestions: false,
-      autocorrect: false,
-      obscureText: hidden,
+    return Column(
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: TextFormField(
+              decoration: InputDecoration(
+                floatingLabelStyle: const TextStyle(fontSize: 11),
+                labelText: label,
+                filled: true,
+              ),
+              controller: controller,
+              key: Key(key),
+              validator: validator,
+              keyboardType: TextInputType.emailAddress,
+              enableSuggestions: false,
+              autocorrect: false,
+              obscureText: hidden,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10)
+      ],
     );
   }
 }
@@ -118,65 +121,50 @@ class _HomePageState extends State<HomePage> with WidgetBuilders {
               ConnectionState.done => Column(
                   children: [
                     /// Email Field
-                    middleAlignBuilder(
-                      textFormBuilder(
-                        'Email',
-                        _emailController,
-                        'emailTextfield',
-                        MultiValidator(
-                          [
-                            RequiredValidator(errorText: 'Email required'),
-                            EmailValidator(
-                                errorText: 'Please enter a valid email')
-                          ],
-                        ),
-                      ),
+                    textFormBuilder(
+                      context,
+                      'Email',
+                      _emailController,
+                      'emailTextfield',
+                      MultiValidator([
+                        RequiredValidator(errorText: 'Email required'),
+                        EmailValidator(errorText: 'Please enter a valid email')
+                      ]),
                     ),
-
-                    /// Password Field
-                    const SizedBox(height: 15),
-                    middleAlignBuilder(
-                      textFormBuilder(
-                        'Password',
-                        _passwordController,
-                        'passwordTextfield',
-                        MultiValidator(
-                          [
-                            RequiredValidator(errorText: 'Password required'),
-                            MinLengthValidator(6,
-                                errorText:
-                                    'Password must contain at least six characters'),
-                            PatternValidator(r'(?=.*?[#?!@$%^&*-])',
-                                errorText:
-                                    'Password must have at least one special character')
-                          ],
-                        ),
-                        hidden: true,
-                      ),
+                    textFormBuilder(
+                      context,
+                      'Password',
+                      _passwordController,
+                      'passwordTextfield',
+                      MultiValidator([
+                        RequiredValidator(errorText: 'Password required'),
+                        MinLengthValidator(6,
+                            errorText:
+                                'Password must contain at least six characters'),
+                        PatternValidator(r'(?=.*?[#?!@$%^&*-])',
+                            errorText:
+                                'Password must have at least one special character')
+                      ]),
+                      hidden: true,
                     ),
 
                     /// Confirm Password Field
-                    const SizedBox(height: 15),
-                    middleAlignBuilder(
-                      textFormBuilder(
-                        'Confirm password',
-                        _confirmPasswordController,
-                        'confirmTextfield',
-                        (password) {
-                          return (password!.isEmpty)
-                              ? 'Confirm your password'
-                              : MatchValidator(
-                                      errorText:
-                                          "Those passwords didn't match. Try again.")
-                                  .validateMatch(
-                                      password, _passwordController.text);
-                        },
-                        hidden: true,
-                      ),
+                    textFormBuilder(
+                      context,
+                      'Confirm password',
+                      _confirmPasswordController,
+                      'confirmTextfield',
+                      (password) {
+                        return (password!.isEmpty)
+                            ? 'Confirm your password'
+                            : MatchValidator(
+                                    errorText:
+                                        "Those passwords didn't match. Try again.")
+                                .validateMatch(
+                                    password, _passwordController.text);
+                      },
+                      hidden: true,
                     ),
-
-                    /// Confirm Button
-                    const SizedBox(height: 15),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           elevation: 10,
@@ -197,7 +185,7 @@ class _HomePageState extends State<HomePage> with WidgetBuilders {
 
                           // Else, create an account for the user and store the
                           // information in Firebase
-                          await FirebaseAuth.instance
+                          var response = await FirebaseAuth.instance
                               .createUserWithEmailAndPassword(
                                   email: _emailController.text,
                                   password: _passwordController.text);
