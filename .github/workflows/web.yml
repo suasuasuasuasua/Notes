@@ -18,4 +18,5 @@ jobs:
           sdk: stable
       - run: flutter pub get
       - run: flutter test
+      - run: flutter build web --release --base-href '/notes-app/'
       - uses: bluefireteam/flutter-gh-pages@v7
