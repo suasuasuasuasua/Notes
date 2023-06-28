@@ -102,6 +102,7 @@ class _HomePageState extends State<HomePage> with WidgetBuilders {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registration Page'),
+        centerTitle: true,
       ),
       // A future builder waits until the defined function that returns a result
       // in the future has completed before building the widget for display
