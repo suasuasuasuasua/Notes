@@ -31,7 +31,49 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-mixin WidgetBuilders {
+class _HomePageState extends State<HomePage> {
+  // Define controllers for the text fields to access data stored in these fields
+  late final TextEditingController _emailController,
+      _passwordController,
+      _confirmPasswordController;
+
+  final _formKey = GlobalKey<FormState>();
+
+  // Called by Flutter automatically when the home page is created
+  @override
+  void initState() {
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+    super.initState();
+  }
+
+  // TODO: Weird bug where you can't register one user, then register another
+  // FirebaseAuth.instance.signOut();
+  //  If you signout, then you can create many users in the same session
+  void authenticateUser() async {
+    // Create an account for the user and store the
+    // information in Firebase
+    var response = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text, password: _passwordController.text);
+
+    // Check that the current context is in the widget
+    // tree to act on it. We need this guard after the
+    // async gap
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Center(
+            child: Text(
+              "Successfuly authenticated!",
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
   Widget textFormBuilder(
       BuildContext context,
       String label,
@@ -53,6 +95,12 @@ mixin WidgetBuilders {
               controller: controller,
               key: Key(key),
               validator: validator,
+              onFieldSubmitted: (value) {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState?.save();
+                  authenticateUser();
+                }
+              },
               keyboardType: TextInputType.emailAddress,
               enableSuggestions: false,
               autocorrect: false,
@@ -63,24 +111,6 @@ mixin WidgetBuilders {
         const SizedBox(height: 10)
       ],
     );
-  }
-}
-
-class _HomePageState extends State<HomePage> with WidgetBuilders {
-  // Define controllers for the text fields to access data stored in these fields
-  late final TextEditingController _emailController,
-      _passwordController,
-      _confirmPasswordController;
-
-  final _formKey = GlobalKey<FormState>();
-
-  // Called by Flutter automatically when the home page is created
-  @override
-  void initState() {
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-    _confirmPasswordController = TextEditingController();
-    super.initState();
   }
 
   // Whenever the home page dies or goes out of memory, Flutter will
@@ -180,31 +210,8 @@ class _HomePageState extends State<HomePage> with WidgetBuilders {
                         onPressed: () async {
                           // Validate the form fields. If any of the fields fail,
                           // stop
-                          if (!_formKey.currentState!.validate()) {
-                            return;
-                          }
-
-                          // Else, create an account for the user and store the
-                          // information in Firebase
-                          var response = await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                                  email: _emailController.text,
-                                  password: _passwordController.text);
-
-                          // Check that the current context is in the widget
-                          // tree to act on it. We need this guard after the
-                          // async gap
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Center(
-                                  child: Text(
-                                    "Successfuly authenticated!",
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ),
-                            );
+                          if (_formKey.currentState!.validate()) {
+                            authenticateUser();
                           }
                         },
                         key: const Key('registerButton'),
