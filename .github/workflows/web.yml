@@ -16,7 +16,10 @@ jobs:
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
+      - run: dart --version
+      - run: flutter --version
       - run: flutter pub get
       - run: flutter test
-      - run: flutter build web --release --base-href '/notes-app/'
       - uses: bluefireteam/flutter-gh-pages@v7
+        with:
+          baseHref: '/notes-app/'
