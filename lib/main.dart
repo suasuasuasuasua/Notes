@@ -194,12 +194,29 @@ class _HomePageState extends State<HomePage> with WidgetBuilders {
                           if (!_formKey.currentState!.validate()) {
                             return;
                           }
+
                           // Else, create an account for the user and store the
                           // information in Firebase
                           await FirebaseAuth.instance
                               .createUserWithEmailAndPassword(
                                   email: _emailController.text,
                                   password: _passwordController.text);
+
+                          // Check that the current context is in the widget
+                          // tree to act on it. We need this guard after the
+                          // async gap
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Center(
+                                  child: Text(
+                                    "Successfuly authenticated!",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
                         },
                         key: const Key('registerButton'),
                         child: const Text('Register')),
