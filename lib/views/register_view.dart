@@ -62,7 +62,7 @@ class _RegisterViewState extends State<RegisterView> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            key: const Key('registration_snackbar'),
+            key: const Key('registrationSnackbar'),
             duration: const Duration(seconds: 2),
             content: Center(
               child: Text(
@@ -80,48 +80,64 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     // Scaffolds are generic containers that are more presentable because they
     // automatically include a titlebar, floating buttons, main text, etc.
-    return Column(
-      children: [
-        /// Email Field
-        textFormBuilder(
-          context: context,
-          label: 'Email',
-          controller: _emailController,
-          key: 'emailTextfield',
-        ),
-        textFormBuilder(
-          context: context,
-          label: 'Password',
-          controller: _passwordController,
-          key: 'passwordTextfield',
-          hidden: true,
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Register'),
+      ),
+      body: Column(
+        children: [
+          /// Email Field
+          textFormBuilder(
+            context: context,
+            label: 'Email',
+            controller: _emailController,
+            key: 'emailTextfield',
+          ),
+          textFormBuilder(
+            context: context,
+            label: 'Password',
+            controller: _passwordController,
+            key: 'passwordTextfield',
+            hidden: true,
+          ),
 
-        /// Confirm Password Field
-        textFormBuilder(
-          context: context,
-          label: 'Confirm password',
-          controller: _confirmPasswordController,
-          key: 'confirmTextfield',
-          hidden: true,
-        ),
-        ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 10,
-            ),
-            // The register button has an asynchronous callback
-            // function because we need to authenticate the user using
-            // Firebase. Authentication does not necessarily happen
-            // instananeously because we can use third party SSO
-            // solutions like Apple and Twitter. Here, we use
-            // FirebaseAuth to create a user with the given email and
-            // password
-            onPressed: () async {
-              registerUser();
-            },
-            key: const Key('registerButton'),
-            child: const Text('Register')),
-      ],
+          /// Confirm Password Field
+          textFormBuilder(
+            context: context,
+            label: 'Confirm password',
+            controller: _confirmPasswordController,
+            key: 'confirmTextfield',
+            hidden: true,
+          ),
+          ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 10,
+              ),
+              // The register button has an asynchronous callback
+              // function because we need to authenticate the user using
+              // Firebase. Authentication does not necessarily happen
+              // instananeously because we can use third party SSO
+              // solutions like Apple and Twitter. Here, we use
+              // FirebaseAuth to create a user with the given email and
+              // password
+              onPressed: () async {
+                registerUser();
+              },
+              key: const Key('registerButton'),
+              child: const Text('Register')),
+          const SizedBox(
+            height: 10,
+          ),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/login/',
+                  (route) => false,
+                );
+              },
+              child: const Text('Already registered? Login here!'))
+        ],
+      ),
     );
   }
 }

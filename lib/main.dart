@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 
 import 'package:notes_app/views/login_view.dart';
 import 'package:notes_app/firebase/firebase_options.dart';
+import 'package:notes_app/views/register_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   // Move material app from MyApp template to here to avoid unnecessary cost of
   // rebuliding on each hot reload
   runApp(buildApp(const HomePage()));
@@ -20,6 +22,10 @@ Widget buildApp(Widget page) {
       useMaterial3: true,
     ),
     debugShowCheckedModeBanner: false,
+    routes: {
+      '/login/': (BuildContext context) => const LoginView(),
+      '/register/': (BuildContext context) => const RegisterView(),
+    },
     home: page,
   );
 }
@@ -29,23 +35,17 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        centerTitle: true,
-      ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              return const LoginView();
-            default:
-              return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            return const LoginView();
+          default:
+            return const CircularProgressIndicator();
+        }
+      },
     );
   }
 }
