@@ -1,4 +1,5 @@
 /// https://console.firebase.google.com/u/0/
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/views/login_view.dart';
@@ -6,8 +7,6 @@ import 'package:notes_app/firebase_options.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // Move material app from MyApp template to here to avoid unnecessary cost of
-  // rebuliding on each hot reload
   runApp(buildApp());
 }
 
@@ -15,11 +14,11 @@ Widget buildApp() {
   return MaterialApp(
     title: 'Notes',
     theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       useMaterial3: true,
     ),
     debugShowCheckedModeBanner: false,
-    home: const HomePage(),
+    home: const LoginView(),
   );
 }
 
