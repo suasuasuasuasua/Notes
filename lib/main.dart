@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/views/login_view.dart';
-import 'package:notes_app/firebase_options.dart';
+import 'package:notes_app/firebase/firebase_options.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // Move material app from MyApp template to here to avoid unnecessary cost of
+  // rebuliding on each hot reload
   runApp(buildApp());
 }
 
@@ -14,11 +16,11 @@ Widget buildApp() {
   return MaterialApp(
     title: 'Notes',
     theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
       useMaterial3: true,
     ),
     debugShowCheckedModeBanner: false,
-    home: const LoginView(),
+    home: const HomePage(),
   );
 }
 
@@ -36,12 +38,18 @@ class HomePage extends StatelessWidget {
         future: Firebase.initializeApp(
             options: DefaultFirebaseOptions.currentPlatform),
         builder: (context, snapshot) {
-          return switch (snapshot.connectionState) {
-            ConnectionState.done => const Text('Done'),
-            _ => const Center(
-                child: CircularProgressIndicator(),
-              )
-          };
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              final user = FirebaseAuth.instance.currentUser;
+              if (user?.emailVerified ?? false) {
+                print('You are a verified user');
+              } else {
+                print('Your email needs to be verified first');
+              }
+              return const Text('Done');
+            default:
+              return const Center(child: CircularProgressIndicator());
+          }
         },
       ),
     );
