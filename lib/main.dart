@@ -1,14 +1,14 @@
 /// https://console.firebase.google.com/u/0/
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:form_field_validator/form_field_validator.dart';
-import 'firebase_options.dart';
+import 'package:notes_app/views/login_view.dart';
+import 'package:notes_app/firebase/firebase_options.dart';
+import 'package:notes_app/util/widget_builder.dart';
+import 'package:notes_app/util/extensions.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // Move material app from MyApp template to here to avoid unnecessary cost of
-  // rebuliding on each hot reload
   runApp(buildApp());
 }
 
@@ -16,27 +16,29 @@ Widget buildApp() {
   return MaterialApp(
     title: 'Notes',
     theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       useMaterial3: true,
     ),
     debugShowCheckedModeBanner: false,
-    home: const HomePage(),
+    home: const LoginView(),
   );
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class RegisterView extends StatefulWidget {
+  const RegisterView({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<RegisterView> createState() => _RegisterViewState();
 }
 
-class _HomePageState extends State<HomePage> {
-  // Define controllers for the text fields to access data stored in these fields
+class _RegisterViewState extends State<RegisterView> {
+  // Define controllers for the text fields to access data stored in these
+  // fields
   late final TextEditingController _emailController,
       _passwordController,
       _confirmPasswordController;
 
+  // Define the key for the textfield forms so that we can validate the input
   final _formKey = GlobalKey<FormState>();
 
   // Called by Flutter automatically when the home page is created
@@ -48,75 +50,10 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  // TODO: Weird bug where you can't register one user, then register another
-  // FirebaseAuth.instance.signOut();
-  //  If you signout, then you can create many users in the same session
-  void authenticateUser() async {
-    // Create an account for the user and store the
-    // information in Firebase
-    var response = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text, password: _passwordController.text);
-
-    // Check that the current context is in the widget
-    // tree to act on it. We need this guard after the
-    // async gap
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Center(
-            child: Text(
-              "Successfuly authenticated!",
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  Widget textFormBuilder(
-      BuildContext context,
-      String label,
-      TextEditingController controller,
-      String key,
-      String? Function(String?) validator,
-      {bool hidden = false}) {
-    return Column(
-      children: [
-        Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: TextFormField(
-              decoration: InputDecoration(
-                floatingLabelStyle: const TextStyle(fontSize: 11),
-                labelText: label,
-                filled: true,
-              ),
-              controller: controller,
-              key: Key(key),
-              validator: validator,
-              onFieldSubmitted: (value) {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState?.save();
-                  authenticateUser();
-                }
-              },
-              keyboardType: TextInputType.emailAddress,
-              enableSuggestions: false,
-              autocorrect: false,
-              obscureText: hidden,
-            ),
-          ),
-        ),
-        const SizedBox(height: 10)
-      ],
-    );
-  }
-
   // Whenever the home page dies or goes out of memory, Flutter will
-  // automatically call dispose to take care of 'loose ends'
-  // Since we have created TextEditingControllers, we are also repsonsible for
-  // diposing of them when we are finished using them
+  // automatically call dispose to take care of 'loose ends' Since we have
+  // created TextEditingControllers, we are also repsonsible for diposing of
+  // them when we are finished using them
   @override
   void dispose() {
     _emailController.dispose();
@@ -125,17 +62,45 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  /// Register the user with the given credentials
+  void registerUser() async {
+    // Create an account for the user and store the information in Firebase
+    try {
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: _emailController.text, password: _passwordController.text);
+
+      // Check that the current context is in the widget tree to act on it. We
+      // need this guard after the async gap
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Center(
+              child: Text(
+                "Successfuly registered!",
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      final errorMessage = e.toErrorMessage();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Scaffolds are generic containers that are more presentable because they
     // automatically include a titlebar, floating buttons, main text, etc.
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registration Page'),
+        title: const Text('Registration'),
         centerTitle: true,
       ),
-      // A future builder waits until the defined function that returns a result
-      // in the future has completed before building the widget for display
+      // A future builder waits until the defined function that returns a
+      // result in the future has completed before building the widget for
+      // display
       body: FutureBuilder(
         future: Firebase.initializeApp(
             options: DefaultFirebaseOptions.currentPlatform),
@@ -148,52 +113,34 @@ class _HomePageState extends State<HomePage> {
           return Form(
             key: _formKey,
             child: switch (snapshot.connectionState) {
-              // We only return the sign-in widget view if the future is finished
+              // We only return the sign-in widget view if the future is
+              // finished
               ConnectionState.done => Column(
                   children: [
                     /// Email Field
                     textFormBuilder(
-                      context,
-                      'Email',
-                      _emailController,
-                      'emailTextfield',
-                      MultiValidator([
-                        RequiredValidator(errorText: 'Email required'),
-                        EmailValidator(errorText: 'Please enter a valid email')
-                      ]),
+                      context: context,
+                      formKey: _formKey,
+                      label: 'Email',
+                      controller: _emailController,
+                      key: 'emailTextfield',
                     ),
                     textFormBuilder(
-                      context,
-                      'Password',
-                      _passwordController,
-                      'passwordTextfield',
-                      MultiValidator([
-                        RequiredValidator(errorText: 'Password required'),
-                        MinLengthValidator(6,
-                            errorText:
-                                'Password must contain at least six characters'),
-                        PatternValidator(r'(?=.*?[#?!@$%^&*-])',
-                            errorText:
-                                'Password must have at least one special character')
-                      ]),
+                      context: context,
+                      formKey: _formKey,
+                      label: 'Password',
+                      controller: _passwordController,
+                      key: 'passwordTextfield',
                       hidden: true,
                     ),
 
                     /// Confirm Password Field
                     textFormBuilder(
-                      context,
-                      'Confirm password',
-                      _confirmPasswordController,
-                      'confirmTextfield',
-                      (password) {
-                        return (password!.isEmpty)
-                            ? 'Confirm your password'
-                            : MatchValidator(
-                                    errorText:
-                                        "Those passwords didn't match. Try again.")
-                                .validateMatch(
-                                    password, _passwordController.text);
-                      },
+                      context: context,
+                      formKey: _formKey,
+                      label: 'Confirm password',
+                      controller: _confirmPasswordController,
+                      key: 'confirmTextfield',
                       hidden: true,
                     ),
                     ElevatedButton(
@@ -211,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                           // Validate the form fields. If any of the fields fail,
                           // stop
                           if (_formKey.currentState!.validate()) {
-                            authenticateUser();
+                            registerUser();
                           }
                         },
                         key: const Key('registerButton'),
