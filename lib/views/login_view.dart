@@ -63,31 +63,48 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        textFormBuilder(
-          context: context,
-          label: 'Email',
-          controller: _emailController,
-          key: 'emailTextfield',
-        ),
-        textFormBuilder(
-          context: context,
-          label: 'Password',
-          controller: _passwordController,
-          key: 'passwordTextfield',
-          hidden: true,
-        ),
-        ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 10,
-            ),
-            onPressed: () async {
-              authenticateUser();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
+      body: Column(
+        children: [
+          textFormBuilder(
+            context: context,
+            label: 'Email',
+            controller: _emailController,
+            key: 'emailTextfield',
+          ),
+          textFormBuilder(
+            context: context,
+            label: 'Password',
+            controller: _passwordController,
+            key: 'passwordTextfield',
+            hidden: true,
+          ),
+          ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                elevation: 5,
+              ),
+              onPressed: () async {
+                authenticateUser();
+              },
+              key: const Key('signinButton'),
+              child: const Text('Sign-in')),
+          const SizedBox(
+            height: 10,
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/register/',
+                (route) => false,
+              );
             },
-            key: const Key('signinButton'),
-            child: const Text('Sign-in')),
-      ],
+            child: const Text('Not registered? Register here!'),
+          )
+        ],
+      ),
     );
   }
 }
