@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 Widget textFormBuilder(
     {required BuildContext context,
-    required GlobalKey<FormState> formKey,
     required String label,
     required TextEditingController controller,
     required String key,
@@ -20,11 +19,6 @@ Widget textFormBuilder(
             ),
             controller: controller,
             key: Key(key),
-            onFieldSubmitted: (value) {
-              if (formKey.currentState!.validate()) {
-                formKey.currentState?.save();
-              }
-            },
             keyboardType: TextInputType.emailAddress,
             enableSuggestions: false,
             autocorrect: false,
