@@ -1,9 +1,5 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:form_field_validator/form_field_validator.dart';
-import 'package:notes_app/firebase/firebase_options.dart';
-import 'package:notes_app/util/extensions.dart';
 import 'package:notes_app/util/widget_builder.dart';
 
 class LoginView extends StatefulWidget {
@@ -15,7 +11,6 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _emailController, _passwordController;
-  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -31,80 +26,67 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
+  /// Register the user with the given credentials
   void authenticateUser() async {
+    String snackbarMessage = 'Successfully signed in!';
+    // Create an account for the user and store the information in Firebase
     try {
-      final userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-              email: _emailController.text, password: _passwordController.text);
-
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+    } on FirebaseAuthException catch (e) {
+      snackbarMessage = "Sign-in failed.\n ${switch (e.code) {
+        'user-not-found' => 'The given email is invalid.',
+        'wrong-password' => 'The password is invalid.',
+        'unknown' => 'One or more of the fields are empty.',
+        _ => e.message
+      }}";
+    } finally {
+      // Check that the current context is in the widget tree to act on it. We
+      // need this guard after the async gap
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
+            key: const Key('registration_snackbar'),
+            duration: const Duration(seconds: 2),
             content: Center(
               child: Text(
-                "Successfuly signed in!",
+                snackbarMessage,
                 textAlign: TextAlign.center,
               ),
             ),
           ),
         );
       }
-    } on FirebaseAuthException catch (e) {
-      final errorMessage = e.toErrorMessage();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign in'),
-        centerTitle: true,
-      ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform),
-        builder: (context, snapshot) {
-          return Form(
-            key: _formKey,
-            child: switch (snapshot.connectionState) {
-              ConnectionState.done => Column(
-                  children: [
-                    textFormBuilder(
-                      context: context,
-                      formKey: _formKey,
-                      label: 'Email',
-                      controller: _emailController,
-                      key: 'emailTextfield',
-                    ),
-                    textFormBuilder(
-                      context: context,
-                      formKey: _formKey,
-                      label: 'Password',
-                      controller: _passwordController,
-                      key: 'passwordTextfield',
-                      hidden: true,
-                    ),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 10,
-                        ),
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            authenticateUser();
-                          }
-                        },
-                        key: const Key('signinButton'),
-                        child: const Text('Sign in')),
-                  ],
-                ),
-              _ => const Center(
-                  child: CircularProgressIndicator(),
-                ),
+    return Column(
+      children: [
+        textFormBuilder(
+          context: context,
+          label: 'Email',
+          controller: _emailController,
+          key: 'emailTextfield',
+        ),
+        textFormBuilder(
+          context: context,
+          label: 'Password',
+          controller: _passwordController,
+          key: 'passwordTextfield',
+          hidden: true,
+        ),
+        ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              elevation: 10,
+            ),
+            onPressed: () async {
+              authenticateUser();
             },
-          );
-        },
-      ),
+            key: const Key('signinButton'),
+            child: const Text('Sign-in')),
+      ],
     );
   }
 }
