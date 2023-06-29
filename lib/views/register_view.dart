@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'package:notes_app/firebase/firebase_options.dart';
 import 'package:notes_app/util/widget_builder.dart';
 import 'package:notes_app/util/extensions.dart';
 
