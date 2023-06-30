@@ -79,17 +79,29 @@ class _RegisterViewState extends State<RegisterView> {
                   FocusManager.instance.primaryFocus?.unfocus();
                   String snackbarMessage = 'Successfully registered!';
 
-                  /// Create an account for the user and store the information in
-                  /// Firebase and catch any errors that may arise
                   try {
+                    /// Create an account for the user and store the information in
+                    /// Firebase and catch any errors that may arise
                     await FirebaseAuth.instance.createUserWithEmailAndPassword(
                         email: _emailController.text,
                         password: _passwordController.text);
-                    // Ensure that the passwords match between the two fields
+
+                    /// Ensure that the passwords match between the two fields
                     if (_passwordController.text !=
                         _confirmPasswordController.text) {
                       throw RegistrationException(
                           cause: 'Passwords do not match.');
+                    }
+
+                    /// Send an email verification to the user before they are
+                    /// taken to the next page
+                    final user = FirebaseAuth.instance.currentUser;
+                    await user?.sendEmailVerification();
+
+                    /// After a successful registration, the user needs to
+                    /// confirm their email
+                    if (context.mounted) {
+                      Navigator.of(context).pushNamed(verifyEmailRoute);
                     }
                   }
                   // Catch any exceptions from Firebase that may arise

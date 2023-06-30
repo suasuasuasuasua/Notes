@@ -65,9 +65,9 @@ class _LoginViewState extends State<LoginView> {
                   FocusManager.instance.primaryFocus?.unfocus();
                   String snackbarMessage = 'Successfully signed in!';
 
-                  /// Create an account for the user and store the information in
-                  /// Firebase
                   try {
+                    /// Create an account for the user and store the information in
+                    /// Firebase
                     await FirebaseAuth.instance.signInWithEmailAndPassword(
                         email: _emailController.text,
                         password: _passwordController.text);
