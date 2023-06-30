@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:notes_app/constants/routes.dart';
 import 'package:notes_app/util/widget_builder.dart';
+import 'package:notes_app/views/dialogue_popups.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -60,12 +61,14 @@ class _LoginViewState extends State<LoginView> {
               ),
               onPressed: () async {
                 String snackbarMessage = 'Successfully signed in!';
+
                 /// Create an account for the user and store the information in
                 /// Firebase
                 try {
                   await FirebaseAuth.instance.signInWithEmailAndPassword(
                       email: _emailController.text,
                       password: _passwordController.text);
+
                   /// If the sign-in attempt was succesful, then move to the
                   /// notes route
                   if (context.mounted) {
@@ -75,8 +78,7 @@ class _LoginViewState extends State<LoginView> {
                     );
                   }
                 }
-                /// Catch any exceptions that may arise and capture it into a
-                /// message that the snackbar can display
+                // Catch any exceptions from Firebase that may arise
                 on FirebaseAuthException catch (e) {
                   snackbarMessage = "Sign-in failed.\n ${switch (e.code) {
                     'user-not-found' => 'The given email is invalid.',
@@ -85,22 +87,14 @@ class _LoginViewState extends State<LoginView> {
                     _ => e.message
                   }}";
                 }
-                /// Display the snackbar message after processing
+                // Catch generic exceptions
+                on Exception catch (e) {
+                  snackbarMessage =
+                      'An error has occurred ${e.toString()}. Try again.';
+                }
+                // Display the snackbar message after processing
                 finally {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        key: const Key('registration_snackbar'),
-                        duration: const Duration(seconds: 2),
-                        content: Center(
-                          child: Text(
-                            snackbarMessage,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
+                  displaySnackbar(context, snackbarMessage);
                 }
               },
               key: const Key('signinButton'),
@@ -115,7 +109,7 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 registerRoute,
-                (route) => false,
+                (Route route) => false,
               );
             },
             child: const Text('Not registered? Register here!'),

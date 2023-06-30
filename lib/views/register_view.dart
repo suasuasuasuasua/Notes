@@ -4,6 +4,7 @@ import 'package:notes_app/constants/routes.dart';
 
 import 'package:notes_app/util/widget_builder.dart';
 import 'package:notes_app/util/extensions.dart';
+import 'package:notes_app/views/dialogue_popups.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -88,34 +89,25 @@ class _RegisterViewState extends State<RegisterView> {
                         cause: 'Passwords do not match.');
                   }
                 }
-
-                /// Catch any exceptions that may arise and capture it into a
-                /// message that the snackbar can display
+                // Catch any exceptions from Firebase that may arise
                 on FirebaseAuthException catch (e) {
                   snackbarMessage = "Registration failed.\n ${switch (e.code) {
                     'unknown' => 'One or more of the fields are empty.',
                     _ => e.message
                   }}";
-                } on RegistrationException catch (e) {
+                }
+                // Catch any exceptions on the registration page
+                on RegistrationException catch (e) {
                   snackbarMessage = e.toString();
                 }
-
-                /// Display the snackbar with the appropriate message
+                // Catch generic exceptions
+                on Exception catch (e) {
+                  snackbarMessage =
+                      'An error has occurred (${e.toString()}). Try again.';
+                }
+                // Display the snackbar with the appropriate message
                 finally {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        key: const Key('registrationSnackbar'),
-                        duration: const Duration(seconds: 2),
-                        content: Center(
-                          child: Text(
-                            snackbarMessage,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
+                  displaySnackbar(context, snackbarMessage);
                 }
               },
               key: const Key('registerButton'),
@@ -130,7 +122,7 @@ class _RegisterViewState extends State<RegisterView> {
               onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   loginRoute,
-                  (route) => false,
+                  (Route route) => false,
                 );
               },
               child: const Text('Already registered? Login here!'))

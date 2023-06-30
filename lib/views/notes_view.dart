@@ -19,8 +19,8 @@ class _NotesViewState extends State<NotesView> {
         title: const Text('Notes'),
         actions: [
           /// Define a popup menu that allows the user to log out
-          PopupMenuButton(
-            onSelected: (value) async {
+          PopupMenuButton<MenuAction>(
+            onSelected: (MenuAction value) async {
               switch (value) {
                 /// If the user clicks logout, give them a prompt that confirms
                 /// their action. If they still choose to logout, sign the user
@@ -37,8 +37,9 @@ class _NotesViewState extends State<NotesView> {
                   break;
               }
             },
+
             /// Define each of the items on the menu dropdown
-            itemBuilder: (context) {
+            itemBuilder: (BuildContext context) {
               return [
                 const PopupMenuItem<MenuAction>(
                   value: MenuAction.logout,
@@ -80,6 +81,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
         ],
       );
     },
+
     /// To return a non-null future, we call .then to fully evaluate showDialog
     /// Since the user can click off of the dialog (and close it), there isn't a
     /// guarantee that the actions will return a boolean. Thus, we can default a
