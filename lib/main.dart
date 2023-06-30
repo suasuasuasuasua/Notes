@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:notes_app/constants/routes.dart';
 
 import 'package:notes_app/views/login_view.dart';
 import 'package:notes_app/firebase/firebase_options.dart';
@@ -26,9 +27,9 @@ Widget buildApp(Widget page) {
     ),
     debugShowCheckedModeBanner: false,
     routes: {
-      '/login/': (BuildContext context) => const LoginView(),
-      '/register/': (BuildContext context) => const RegisterView(),
-      '/notes/': (BuildContext context) => const NotesView(),
+      loginRoute: (BuildContext context) => const LoginView(),
+      registerRoute: (BuildContext context) => const RegisterView(),
+      notesRoute: (BuildContext context) => const NotesView(),
     },
     home: page,
   );
