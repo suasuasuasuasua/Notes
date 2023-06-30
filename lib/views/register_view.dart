@@ -39,43 +39,6 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
-  /// Register the user with the given credentials
-  void registerUser() async {
-    String snackbarMessage = 'Successfully registered!';
-    // Create an account for the user and store the information in Firebase
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
-      if (_passwordController.text != _confirmPasswordController.text) {
-        throw RegistrationException(cause: 'Passwords do not match.');
-      }
-    } on FirebaseAuthException catch (e) {
-      snackbarMessage = "Registration failed.\n ${switch (e.code) {
-        'unknown' => 'One or more of the fields are empty.',
-        _ => e.message
-      }}";
-    } on RegistrationException catch (e) {
-      snackbarMessage = e.toString();
-    } finally {
-      // Check that the current context is in the widget tree to act on it. We
-      // need this guard after the async gap
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            key: const Key('registrationSnackbar'),
-            duration: const Duration(seconds: 2),
-            content: Center(
-              child: Text(
-                snackbarMessage,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     // Scaffolds are generic containers that are more presentable because they
@@ -121,7 +84,42 @@ class _RegisterViewState extends State<RegisterView> {
               // FirebaseAuth to create a user with the given email and
               // password
               onPressed: () async {
-                registerUser();
+                String snackbarMessage = 'Successfully registered!';
+                // Create an account for the user and store the information in Firebase
+                try {
+                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                      email: _emailController.text,
+                      password: _passwordController.text);
+                  if (_passwordController.text !=
+                      _confirmPasswordController.text) {
+                    throw RegistrationException(
+                        cause: 'Passwords do not match.');
+                  }
+                } on FirebaseAuthException catch (e) {
+                  snackbarMessage = "Registration failed.\n ${switch (e.code) {
+                    'unknown' => 'One or more of the fields are empty.',
+                    _ => e.message
+                  }}";
+                } on RegistrationException catch (e) {
+                  snackbarMessage = e.toString();
+                } finally {
+                  // Check that the current context is in the widget tree to act on it. We
+                  // need this guard after the async gap
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        key: const Key('registrationSnackbar'),
+                        duration: const Duration(seconds: 2),
+                        content: Center(
+                          child: Text(
+                            snackbarMessage,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                }
               },
               key: const Key('registerButton'),
               child: const Text('Register')),
