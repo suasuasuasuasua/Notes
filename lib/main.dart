@@ -30,6 +30,7 @@ Widget buildApp(Widget page) {
       loginRoute: (BuildContext context) => const LoginView(),
       registerRoute: (BuildContext context) => const RegisterView(),
       notesRoute: (BuildContext context) => const NotesView(),
+      verifyEmailRoute: (BuildContext context) => const VerifyEmailView(),
     },
     home: page,
   );
