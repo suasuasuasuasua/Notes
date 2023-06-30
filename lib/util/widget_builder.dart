@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// A function that returns a textform with initialized parameters
 Widget textFormBuilder(
     {required BuildContext context,
     required String label,
