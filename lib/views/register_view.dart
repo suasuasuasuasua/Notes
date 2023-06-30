@@ -44,6 +44,10 @@ class _RegisterViewState extends State<RegisterView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(
+              height: 10,
+            ),
+
             /// Email Field
             textFormBuilder(
               context: context,
