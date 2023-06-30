@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:notes_app/constants/routes.dart';
 
 import 'package:notes_app/util/widget_builder.dart';
-import 'package:notes_app/util/extensions.dart';
 import 'package:notes_app/views/dialogue_popups.dart';
+
+import '../services/auth/auth_exceptions.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -90,12 +91,12 @@ class _RegisterViewState extends State<RegisterView> {
                         email: _emailController.text,
                         password: _passwordController.text);
 
-                    /// Ensure that the passwords match between the two fields
-                    if (_passwordController.text !=
-                        _confirmPasswordController.text) {
-                      throw RegistrationException(
-                          cause: 'Passwords do not match.');
-                    }
+                    // /// Ensure that the passwords match between the two fields
+                    // if (_passwordController.text !=
+                    //     _confirmPasswordController.text) {
+                    //   throw RegistrationException(
+                    //       cause: 'Passwords do not match.');
+                    // }
 
                     /// Send an email verification to the user before they are
                     /// taken to the next page
@@ -110,20 +111,9 @@ class _RegisterViewState extends State<RegisterView> {
                   }
                   // Catch any exceptions from Firebase that may arise
                   on FirebaseAuthException catch (e) {
-                    snackbarMessage =
-                        "Registration failed.\n ${switch (e.code) {
-                      'unknown' => 'One or more of the fields are empty.',
-                      _ => e.message
-                    }}";
-                  }
-                  // Catch any exceptions on the registration page
-                  on RegistrationException catch (e) {
-                    snackbarMessage = e.toString();
                   }
                   // Catch generic exceptions
-                  on Exception catch (e) {
-                    snackbarMessage =
-                        'An error has occurred (${e.toString()}). Try again.';
+                  catch (e) {
                   }
                   // Display the snackbar with the appropriate message
                   finally {

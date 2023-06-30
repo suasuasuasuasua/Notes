@@ -5,16 +5,6 @@ extension PrintException on FirebaseAuthException {
   String toErrorMessage() => '${code.split('-').join(' ').toCapitalized()}.';
 }
 
-class RegistrationException implements Exception {
-  String cause;
-  RegistrationException({required this.cause});
-
-  @override
-  String toString() {
-    return cause;
-  }
-}
-
 /// Sign-in exceptions
 class UserNotFoundAuthException implements Exception {}
 
