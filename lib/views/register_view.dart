@@ -13,13 +13,10 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
-  // Define controllers for the text fields to access data stored in these
-  // fields
   late final TextEditingController _emailController,
       _passwordController,
       _confirmPasswordController;
 
-  // Called by Flutter automatically when the home page is created
   @override
   void initState() {
     _emailController = TextEditingController();
@@ -28,10 +25,6 @@ class _RegisterViewState extends State<RegisterView> {
     super.initState();
   }
 
-  // Whenever the home page dies or goes out of memory, Flutter will
-  // automatically call dispose to take care of 'loose ends' Since we have
-  // created TextEditingControllers, we are also repsonsible for diposing of
-  // them when we are finished using them
   @override
   void dispose() {
     _emailController.dispose();
@@ -42,8 +35,6 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    // Scaffolds are generic containers that are more presentable because they
-    // automatically include a titlebar, floating buttons, main text, etc.
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register'),
@@ -57,6 +48,8 @@ class _RegisterViewState extends State<RegisterView> {
             controller: _emailController,
             key: 'emailTextfield',
           ),
+
+          /// Password Field
           textFormBuilder(
             context: context,
             label: 'Password',
@@ -73,39 +66,42 @@ class _RegisterViewState extends State<RegisterView> {
             key: 'confirmTextfield',
             hidden: true,
           ),
+
+          /// Registration button
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                 elevation: 10,
               ),
-              // The register button has an asynchronous callback
-              // function because we need to authenticate the user using
-              // Firebase. Authentication does not necessarily happen
-              // instananeously because we can use third party SSO
-              // solutions like Apple and Twitter. Here, we use
-              // FirebaseAuth to create a user with the given email and
-              // password
               onPressed: () async {
                 String snackbarMessage = 'Successfully registered!';
-                // Create an account for the user and store the information in Firebase
+
+                /// Create an account for the user and store the information in
+                /// Firebase and catch any errors that may arise
                 try {
                   await FirebaseAuth.instance.createUserWithEmailAndPassword(
                       email: _emailController.text,
                       password: _passwordController.text);
+                  // Ensure that the passwords match between the two fields
                   if (_passwordController.text !=
                       _confirmPasswordController.text) {
                     throw RegistrationException(
                         cause: 'Passwords do not match.');
                   }
-                } on FirebaseAuthException catch (e) {
+                }
+
+                /// Catch any exceptions that may arise and capture it into a
+                /// message that the snackbar can display
+                on FirebaseAuthException catch (e) {
                   snackbarMessage = "Registration failed.\n ${switch (e.code) {
                     'unknown' => 'One or more of the fields are empty.',
                     _ => e.message
                   }}";
                 } on RegistrationException catch (e) {
                   snackbarMessage = e.toString();
-                } finally {
-                  // Check that the current context is in the widget tree to act on it. We
-                  // need this guard after the async gap
+                }
+
+                /// Display the snackbar with the appropriate message
+                finally {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -124,9 +120,12 @@ class _RegisterViewState extends State<RegisterView> {
               },
               key: const Key('registerButton'),
               child: const Text('Register')),
+
           const SizedBox(
             height: 10,
           ),
+
+          /// A button that returns the user to the login page
           TextButton(
               onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(

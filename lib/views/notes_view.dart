@@ -18,9 +18,13 @@ class _NotesViewState extends State<NotesView> {
       appBar: AppBar(
         title: const Text('Notes'),
         actions: [
+          /// Define a popup menu that allows the user to log out
           PopupMenuButton(
             onSelected: (value) async {
               switch (value) {
+                /// If the user clicks logout, give them a prompt that confirms
+                /// their action. If they still choose to logout, sign the user
+                /// out and return to the login route
                 case MenuAction.logout:
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
@@ -33,6 +37,7 @@ class _NotesViewState extends State<NotesView> {
                   break;
               }
             },
+            /// Define each of the items on the menu dropdown
             itemBuilder: (context) {
               return [
                 const PopupMenuItem<MenuAction>(
@@ -49,7 +54,9 @@ class _NotesViewState extends State<NotesView> {
   }
 }
 
+/// A dialog option that confirms whether the user wants to sign out or not
 Future<bool> showLogOutDialog(BuildContext context) {
+  // Returns a future bool because the user is not going to answer right away
   return showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
@@ -73,5 +80,9 @@ Future<bool> showLogOutDialog(BuildContext context) {
         ],
       );
     },
+    /// To return a non-null future, we call .then to fully evaluate showDialog
+    /// Since the user can click off of the dialog (and close it), there isn't a
+    /// guarantee that the actions will return a boolean. Thus, we can default a
+    /// value of false
   ).then((value) => value ?? false);
 }
