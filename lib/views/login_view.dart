@@ -35,86 +35,91 @@ class _LoginViewState extends State<LoginView> {
       appBar: AppBar(
         title: const Text('Login'),
       ),
-      body: Column(
-        children: [
-          /// Email textfield
-          textFormBuilder(
-            context: context,
-            label: 'Email',
-            controller: _emailController,
-            key: 'emailTextfield',
-          ),
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            /// Email textfield
+            textFormBuilder(
+              context: context,
+              label: 'Email',
+              controller: _emailController,
+              key: 'emailTextfield',
+            ),
 
-          /// Password textfield
-          textFormBuilder(
-            context: context,
-            label: 'Password',
-            controller: _passwordController,
-            key: 'passwordTextfield',
-            hidden: true,
-          ),
+            /// Password textfield
+            textFormBuilder(
+              context: context,
+              label: 'Password',
+              controller: _passwordController,
+              key: 'passwordTextfield',
+              hidden: true,
+            ),
 
-          /// A button that signs the user in with the given credentials
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 5,
-              ),
-              onPressed: () async {
-                String snackbarMessage = 'Successfully signed in!';
+            /// A button that signs the user in with the given credentials
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 5,
+                ),
+                onPressed: () async {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  String snackbarMessage = 'Successfully signed in!';
 
-                /// Create an account for the user and store the information in
-                /// Firebase
-                try {
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: _emailController.text,
-                      password: _passwordController.text);
+                  try {
+                    /// Create an account for the user and store the information in
+                    /// Firebase
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: _emailController.text,
+                        password: _passwordController.text);
 
-                  /// If the sign-in attempt was succesful, then move to the
-                  /// notes route
-                  if (context.mounted) {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      notesRoute,
-                      (route) => false,
-                    );
+                    /// If the sign-in attempt was succesful, then move to the
+                    /// notes route
+                    if (context.mounted) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        notesRoute,
+                        (route) => false,
+                      );
+                    }
                   }
-                }
-                // Catch any exceptions from Firebase that may arise
-                on FirebaseAuthException catch (e) {
-                  snackbarMessage = "Sign-in failed.\n ${switch (e.code) {
-                    'user-not-found' => 'The given email is invalid.',
-                    'wrong-password' => 'The password is invalid.',
-                    'unknown' => 'One or more of the fields are empty.',
-                    _ => e.message
-                  }}";
-                }
-                // Catch generic exceptions
-                on Exception catch (e) {
-                  snackbarMessage =
-                      'An error has occurred ${e.toString()}. Try again.';
-                }
-                // Display the snackbar message after processing
-                finally {
-                  displaySnackbar(context, snackbarMessage);
-                }
+                  // Catch any exceptions from Firebase that may arise
+                  on FirebaseAuthException catch (e) {
+                    snackbarMessage = "Sign-in failed.\n ${switch (e.code) {
+                      'user-not-found' => 'The given email is invalid.',
+                      'wrong-password' => 'The password is invalid.',
+                      'unknown' => 'One or more of the fields are empty.',
+                      _ => e.message
+                    }}";
+                  }
+                  // Catch generic exceptions
+                  on Exception catch (e) {
+                    snackbarMessage =
+                        'An error has occurred ${e.toString()}. Try again.';
+                  }
+                  // Display the snackbar message after processing
+                  finally {
+                    displaySnackbar(context, snackbarMessage);
+                  }
+                },
+                key: const Key('signinButton'),
+                child: const Text('Sign-in')),
+
+            const SizedBox(
+              height: 10,
+            ),
+
+            /// A button that allows the user to sign in
+            TextButton(
+              onPressed: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  registerRoute,
+                  (Route route) => false,
+                );
               },
-              key: const Key('signinButton'),
-              child: const Text('Sign-in')),
-
-          const SizedBox(
-            height: 10,
-          ),
-
-          /// A button that allows the user to register
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                registerRoute,
-                (Route route) => false,
-              );
-            },
-            child: const Text('Not registered? Register here!'),
-          )
-        ],
+              child: const Text('Not registered? Register here!'),
+            )
+          ],
+        ),
       ),
     );
   }

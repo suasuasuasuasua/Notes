@@ -40,93 +40,111 @@ class _RegisterViewState extends State<RegisterView> {
       appBar: AppBar(
         title: const Text('Register'),
       ),
-      body: Column(
-        children: [
-          /// Email Field
-          textFormBuilder(
-            context: context,
-            label: 'Email',
-            controller: _emailController,
-            key: 'emailTextfield',
-          ),
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            /// Email Field
+            textFormBuilder(
+              context: context,
+              label: 'Email',
+              controller: _emailController,
+              key: 'emailTextfield',
+            ),
 
-          /// Password Field
-          textFormBuilder(
-            context: context,
-            label: 'Password',
-            controller: _passwordController,
-            key: 'passwordTextfield',
-            hidden: true,
-          ),
+            /// Password Field
+            textFormBuilder(
+              context: context,
+              label: 'Password',
+              controller: _passwordController,
+              key: 'passwordTextfield',
+              hidden: true,
+            ),
 
-          /// Confirm Password Field
-          textFormBuilder(
-            context: context,
-            label: 'Confirm password',
-            controller: _confirmPasswordController,
-            key: 'confirmTextfield',
-            hidden: true,
-          ),
+            /// Confirm Password Field
+            textFormBuilder(
+              context: context,
+              label: 'Confirm password',
+              controller: _confirmPasswordController,
+              key: 'confirmTextfield',
+              hidden: true,
+            ),
 
-          /// Registration button
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                elevation: 10,
-              ),
-              onPressed: () async {
-                String snackbarMessage = 'Successfully registered!';
+            /// Registration button
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 10,
+                ),
+                onPressed: () async {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  String snackbarMessage = 'Successfully registered!';
 
-                /// Create an account for the user and store the information in
-                /// Firebase and catch any errors that may arise
-                try {
-                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                      email: _emailController.text,
-                      password: _passwordController.text);
-                  // Ensure that the passwords match between the two fields
-                  if (_passwordController.text !=
-                      _confirmPasswordController.text) {
-                    throw RegistrationException(
-                        cause: 'Passwords do not match.');
+                  try {
+                    /// Create an account for the user and store the information in
+                    /// Firebase and catch any errors that may arise
+                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        email: _emailController.text,
+                        password: _passwordController.text);
+
+                    /// Ensure that the passwords match between the two fields
+                    if (_passwordController.text !=
+                        _confirmPasswordController.text) {
+                      throw RegistrationException(
+                          cause: 'Passwords do not match.');
+                    }
+
+                    /// Send an email verification to the user before they are
+                    /// taken to the next page
+                    final user = FirebaseAuth.instance.currentUser;
+                    await user?.sendEmailVerification();
+
+                    /// After a successful registration, the user needs to
+                    /// confirm their email
+                    if (context.mounted) {
+                      Navigator.of(context).pushNamed(verifyEmailRoute);
+                    }
                   }
-                }
-                // Catch any exceptions from Firebase that may arise
-                on FirebaseAuthException catch (e) {
-                  snackbarMessage = "Registration failed.\n ${switch (e.code) {
-                    'unknown' => 'One or more of the fields are empty.',
-                    _ => e.message
-                  }}";
-                }
-                // Catch any exceptions on the registration page
-                on RegistrationException catch (e) {
-                  snackbarMessage = e.toString();
-                }
-                // Catch generic exceptions
-                on Exception catch (e) {
-                  snackbarMessage =
-                      'An error has occurred (${e.toString()}). Try again.';
-                }
-                // Display the snackbar with the appropriate message
-                finally {
-                  displaySnackbar(context, snackbarMessage);
-                }
-              },
-              key: const Key('registerButton'),
-              child: const Text('Register')),
+                  // Catch any exceptions from Firebase that may arise
+                  on FirebaseAuthException catch (e) {
+                    snackbarMessage =
+                        "Registration failed.\n ${switch (e.code) {
+                      'unknown' => 'One or more of the fields are empty.',
+                      _ => e.message
+                    }}";
+                  }
+                  // Catch any exceptions on the registration page
+                  on RegistrationException catch (e) {
+                    snackbarMessage = e.toString();
+                  }
+                  // Catch generic exceptions
+                  on Exception catch (e) {
+                    snackbarMessage =
+                        'An error has occurred (${e.toString()}). Try again.';
+                  }
+                  // Display the snackbar with the appropriate message
+                  finally {
+                    displaySnackbar(context, snackbarMessage);
+                  }
+                },
+                key: const Key('registerButton'),
+                child: const Text('Register')),
 
-          const SizedBox(
-            height: 10,
-          ),
+            const SizedBox(
+              height: 10,
+            ),
 
-          /// A button that returns the user to the login page
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  loginRoute,
-                  (Route route) => false,
-                );
-              },
-              child: const Text('Already registered? Login here!'))
-        ],
+            /// A button that returns the user to the login page
+            TextButton(
+                onPressed: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    loginRoute,
+                    (Route route) => false,
+                  );
+                },
+                child: const Text('Already registered? Login here!'))
+          ],
+        ),
       ),
     );
   }
