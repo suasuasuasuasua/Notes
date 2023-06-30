@@ -28,6 +28,7 @@ Widget buildApp(Widget page) {
     routes: {
       '/login/': (BuildContext context) => const LoginView(),
       '/register/': (BuildContext context) => const RegisterView(),
+      '/notes/': (BuildContext context) => const NotesView(),
     },
     home: page,
   );
@@ -42,19 +43,19 @@ class HomePage extends StatelessWidget {
       future: Firebase.initializeApp(
           options: DefaultFirebaseOptions.currentPlatform),
       builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.done:
-            final user = FirebaseAuth.instance.currentUser;
-            return switch (user) {
+        return switch (snapshot.connectionState) {
+          ConnectionState.done => switch (FirebaseAuth.instance.currentUser) {
               null => const LoginView(),
-              _ => (user.emailVerified)
+              _ => (FirebaseAuth.instance.currentUser!.emailVerified)
                   ? const NotesView()
                   : const VerifyEmailView()
-            };
-
-          default:
-            return const CircularProgressIndicator();
-        }
+            },
+          _ => const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+        };
       },
     );
   }
