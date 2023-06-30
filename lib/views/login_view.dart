@@ -101,17 +101,10 @@ class _LoginViewState extends State<LoginView> {
                   }
                   // Catch any exceptions from Firebase that may arise
                   on FirebaseAuthException catch (e) {
-                    snackbarMessage = "Sign-in failed.\n ${switch (e.code) {
-                      'user-not-found' => 'The given email is invalid.',
-                      'wrong-password' => 'The password is invalid.',
-                      'unknown' => 'One or more of the fields are empty.',
-                      _ => e.message
-                    }}";
+
                   }
                   // Catch generic exceptions
                   on Exception catch (e) {
-                    snackbarMessage =
-                        'An error has occurred ${e.toString()}. Try again.';
                   }
                   // Display the snackbar message after processing
                   finally {
