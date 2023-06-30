@@ -45,25 +45,11 @@ void main() {
   /// Define the keys and find the fields on the page
   const emailTextfieldKey = 'emailTextfield',
       passwordTextfieldKey = 'passwordTextfield',
-      confirmTextfieldKey = 'confirmTextfield',
-      registerKey = 'registerButton';
+      signinButtonKey = 'signinButton';
 
   final emailField = find.byKey(const Key(emailTextfieldKey)),
       passwordField = find.byKey(const Key(passwordTextfieldKey)),
-      confirmField = find.byKey(const Key(confirmTextfieldKey)),
-      registerButton = find.byKey(const Key(registerKey));
-
-  /// Define the error message that we are looking for
-  const emptyEmailMessage = 'Email required',
-      invalidEmailMessage = 'Please enter a valid email';
-
-  const emptyPasswordMessage = 'Password required',
-      passwordTooShortMessage = 'Password must contain at least six characters',
-      passwordMissingSpecialCharMessage =
-          'Password must have at least one special character';
-
-  const emptyConfirmMessage = 'Confirm your password',
-      confirmationFailMessage = "Those passwords didn't match. Try again.";
+      signinButton = find.byKey(const Key(signinButtonKey));
 
   /// Define a function that tests inputs on the fields and validates assertions
   testField(WidgetTester tester,
@@ -72,7 +58,7 @@ void main() {
       required String? errorMessage}) async {
     await tester.enterText(testedField, testMessage);
     await tester.pump(const Duration(seconds: 10));
-    await tester.tap(registerButton);
+    await tester.tap(signinButton);
     await tester.pump(const Duration(seconds: 10));
     expect(
         find.descendant(
@@ -87,15 +73,14 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the register text on the home registration page
-      expect(find.widgetWithText(AppBar, 'Registration Page'), findsOneWidget);
+      expect(find.widgetWithText(AppBar, 'Login'), findsOneWidget);
 
       // Find the username, password, and confirmation field boxes
       expect(emailField, findsOneWidget);
       expect(passwordField, findsOneWidget);
-      expect(confirmField, findsOneWidget);
 
       // Find the register button on the home registration page
-      expect(registerButton, findsOneWidget);
+      expect(signinButton, findsOneWidget);
     });
 
     testWidgets('Verify input is working in the text fields',
@@ -121,10 +106,5 @@ void main() {
         testPassword,
       );
     });
-  });
-
-  /// TODO: Rewrite the tests...
-  group('Testing all fields', () {
-    expect(1, 1);
   });
 }
