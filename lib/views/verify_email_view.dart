@@ -31,7 +31,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 const SizedBox(
                   width: 300,
                   child: Text(
-                      "If you haven't received the email verification, click the button below"),
+                      "If you haven't received the email verification, click the button below."),
                 ),
                 const SizedBox(height: 15),
                 // Request Firebase to send an email verification
@@ -47,12 +47,12 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                     await FirebaseAuth.instance.signOut();
                     if (context.mounted) {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                        registerRoute,
+                        loginRoute,
                         (route) => false,
                       );
                     }
                   },
-                  child: const Text('Sign out and return to registration.'),
+                  child: const Text('Sign out and return to the login page.'),
                 )
               ],
             ),

@@ -39,6 +39,10 @@ class _LoginViewState extends State<LoginView> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(
+              height: 10,
+            ),
+
             /// Email textfield
             textFormBuilder(
               context: context,
@@ -72,13 +76,27 @@ class _LoginViewState extends State<LoginView> {
                         email: _emailController.text,
                         password: _passwordController.text);
 
-                    /// If the sign-in attempt was succesful, then move to the
-                    /// notes route
-                    if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        notesRoute,
-                        (route) => false,
-                      );
+                    final user = FirebaseAuth.instance.currentUser;
+                    // Ensure that the user has verified their email before
+                    // moving to the notes main UI
+                    if (user?.emailVerified ?? false) {
+                      if (context.mounted) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          notesRoute,
+                          (route) => false,
+                        );
+                      }
+                    }
+                    // Ensure that the user verifies their email before
+                    // proceding
+                    else {
+                      snackbarMessage = 'Please verify your email.';
+                      if (context.mounted) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          verifyEmailRoute,
+                          (route) => false,
+                        );
+                      }
                     }
                   }
                   // Catch any exceptions from Firebase that may arise
