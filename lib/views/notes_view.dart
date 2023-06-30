@@ -41,6 +41,11 @@ class _NotesViewState extends State<NotesView> {
             /// Define each of the items on the menu dropdown
             itemBuilder: (BuildContext context) {
               return [
+                PopupMenuItem<MenuAction>(
+                  enabled: false,
+                  child: Text(
+                      'Signed in as\n${FirebaseAuth.instance.currentUser?.email ?? ''}'),
+                ),
                 const PopupMenuItem<MenuAction>(
                   value: MenuAction.logout,
                   child: Text('Logout'),
@@ -50,7 +55,17 @@ class _NotesViewState extends State<NotesView> {
           )
         ],
       ),
-      body: const Text('Hello world!'),
+      body: const Padding(
+        padding: EdgeInsets.all(25.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Hello world!'),
+            Text('Bruh moment'),
+          ],
+        ),
+      ),
     );
   }
 }
