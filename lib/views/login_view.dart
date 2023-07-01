@@ -71,7 +71,7 @@ class _LoginViewState extends State<LoginView> {
                   try {
                     /// Create an account for the user and store the information in
                     /// Firebase
-                    await AuthService.firebase().login(
+                    await AuthService.firebase().logIn(
                       email: _emailController.text,
                       password: _passwordController.text,
                     );
