@@ -10,7 +10,6 @@ import 'package:notes_app/views/verify_email_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  AuthService.firebase().logOut();
 
   // Move material app from MyApp template to here to avoid unnecessary cost of
   // rebuliding on each hot reload
