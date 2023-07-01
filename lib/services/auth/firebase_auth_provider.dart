@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:notes_app/firebase_options.dart';
 import 'package:notes_app/services/auth/auth_user.dart';
 import 'package:notes_app/services/auth/auth_provider.dart';
 import 'package:notes_app/services/auth/auth_exceptions.dart';
@@ -68,7 +70,7 @@ class FirebaseAuthProvider implements AuthProvider {
         'wrong-password' => WrongPasswordAuthException(),
         _ => GenericAuthException()
       });
-    } catch (_) {
+    } catch (e) {
       throw GenericAuthException();
     }
   }
@@ -81,5 +83,12 @@ class FirebaseAuthProvider implements AuthProvider {
     } else {
       throw UserNotFoundAuthException();
     }
+  }
+
+  @override
+  Future<void> initialize() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   }
 }

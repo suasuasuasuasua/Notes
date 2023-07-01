@@ -13,8 +13,16 @@ Widget textFormBuilder(
       Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-              maxWidth:
-                  (kIsWeb ? 500.0 : MediaQuery.of(context).size.width * 0.8)),
+              maxWidth: switch (defaultTargetPlatform) {
+            TargetPlatform.iOS ||
+            TargetPlatform.android =>
+              MediaQuery.of(context).size.width * 0.8,
+            _ => (kIsWeb &&
+                    (defaultTargetPlatform == TargetPlatform.iOS ||
+                        defaultTargetPlatform == TargetPlatform.android))
+                ? MediaQuery.of(context).size.width * 0.8
+                : 400.0
+          }),
           child: TextFormField(
             decoration: InputDecoration(
               floatingLabelStyle: const TextStyle(fontSize: 11),
