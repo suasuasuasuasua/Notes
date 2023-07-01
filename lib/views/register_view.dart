@@ -1,11 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/constants/routes.dart';
+import 'package:notes_app/services/auth/auth_exceptions.dart';
+import 'package:notes_app/services/auth/auth_services.dart';
 
 import 'package:notes_app/util/widget_builder.dart';
 import 'package:notes_app/views/dialogue_popups.dart';
-
-import '../services/auth/auth_exceptions.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -82,38 +81,35 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
                 onPressed: () async {
                   FocusManager.instance.primaryFocus?.unfocus();
-                  String snackbarMessage = 'Successfully registered!';
+                  late final String snackbarMessage;
 
                   try {
                     /// Create an account for the user and store the information in
                     /// Firebase and catch any errors that may arise
-                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    await AuthService.firebase().createUser(
                         email: _emailController.text,
                         password: _passwordController.text);
 
-                    // /// Ensure that the passwords match between the two fields
-                    // if (_passwordController.text !=
-                    //     _confirmPasswordController.text) {
-                    //   throw RegistrationException(
-                    //       cause: 'Passwords do not match.');
-                    // }
+                    /// Ensure that the passwords match between the two fields
+                    if (_passwordController.text !=
+                        _confirmPasswordController.text) {
+                      throw PasswordsNotMatching();
+                    }
 
                     /// Send an email verification to the user before they are
                     /// taken to the next page
-                    final user = FirebaseAuth.instance.currentUser;
-                    await user?.sendEmailVerification();
+                    await AuthService.firebase().sendEmailVerification();
 
                     /// After a successful registration, the user needs to
                     /// confirm their email
                     if (context.mounted) {
+                      snackbarMessage = 'Successfully registered.';
                       Navigator.of(context).pushNamed(verifyEmailRoute);
                     }
                   }
-                  // Catch any exceptions from Firebase that may arise
-                  on FirebaseAuthException catch (e) {
-                  }
-                  // Catch generic exceptions
+                  // Catch all exceptions and save the toString()
                   catch (e) {
+                    snackbarMessage = e.toString();
                   }
                   // Display the snackbar with the appropriate message
                   finally {

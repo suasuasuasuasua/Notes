@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:notes_app/constants/routes.dart';
+import 'package:notes_app/services/auth/auth_services.dart';
 import 'package:notes_app/util/widget_builder.dart';
 import 'package:notes_app/views/dialogue_popups.dart';
 
@@ -67,44 +67,41 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 onPressed: () async {
                   FocusManager.instance.primaryFocus?.unfocus();
-                  String snackbarMessage = 'Successfully signed in!';
+                  late final String snackbarMessage;
 
                   try {
                     /// Create an account for the user and store the information in
                     /// Firebase
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: _emailController.text,
-                        password: _passwordController.text);
+                    await AuthService.firebase().login(
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                    );
 
-                    final user = FirebaseAuth.instance.currentUser;
+                    final user = AuthService.firebase().currentUser;
                     // Ensure that the user has verified their email before
                     // moving to the notes main UI
-                    if (user?.emailVerified ?? false) {
+                    if (user?.isEmailVerified ?? false) {
                       if (context.mounted) {
+                        snackbarMessage = 'Successfully signed in!';
                         Navigator.of(context).pushNamedAndRemoveUntil(
                           notesRoute,
                           (route) => false,
                         );
                       }
                     }
-                    // Ensure that the user verifies their email before
-                    // proceding
+                    // Ensure the user verifies their email before proceding
                     else {
                       snackbarMessage = 'Please verify your email.';
                       if (context.mounted) {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
+                        Navigator.of(context).pushNamed(
                           verifyEmailRoute,
-                          (route) => false,
                         );
                       }
                     }
                   }
-                  // Catch any exceptions from Firebase that may arise
-                  on FirebaseAuthException catch (e) {
-
-                  }
-                  // Catch generic exceptions
-                  on Exception catch (e) {
+                  // Catch all exceptions and save the toString()
+                  catch (e) {
+                    snackbarMessage = e.toString();
                   }
                   // Display the snackbar message after processing
                   finally {

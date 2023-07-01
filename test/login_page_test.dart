@@ -9,7 +9,7 @@
 // found in the LICENSE file.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:notes_app/firebase/firebase_options.dart';
+import 'package:notes_app/firebase_options.dart';
 import 'package:notes_app/main.dart';
 
 import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';

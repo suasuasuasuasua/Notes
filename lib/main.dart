@@ -1,17 +1,16 @@
 /// https://console.firebase.google.com/u/0/
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_app/constants/routes.dart';
 
+import 'package:notes_app/constants/routes.dart';
+import 'package:notes_app/services/auth/auth_services.dart';
 import 'package:notes_app/views/login_view.dart';
-import 'package:notes_app/firebase/firebase_options.dart';
 import 'package:notes_app/views/notes_view.dart';
 import 'package:notes_app/views/register_view.dart';
 import 'package:notes_app/views/verify_email_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  AuthService.firebase().logOut();
 
   // Move material app from MyApp template to here to avoid unnecessary cost of
   // rebuliding on each hot reload
@@ -42,15 +41,15 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform),
+      future: AuthService.firebase().initialize(),
       builder: (context, snapshot) {
         return switch (snapshot.connectionState) {
-          ConnectionState.done => switch (FirebaseAuth.instance.currentUser) {
+          ConnectionState.done => switch (AuthService.firebase().currentUser) {
               null => const LoginView(),
-              _ => (FirebaseAuth.instance.currentUser!.emailVerified)
-                  ? const NotesView()
-                  : const VerifyEmailView()
+              _ =>
+                (AuthService.firebase().currentUser?.isEmailVerified ?? false)
+                    ? const NotesView()
+                    : const VerifyEmailView()
             },
           _ => const Scaffold(
               body: Center(

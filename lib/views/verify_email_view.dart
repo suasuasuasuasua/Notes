@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'package:notes_app/constants/routes.dart';
+import 'package:notes_app/services/auth/auth_services.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -22,10 +21,10 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           Center(
             child: Column(
               children: [
-                const SizedBox(
+                SizedBox(
                   width: 300,
                   child: Text(
-                      "We've sent you an email verification. Please verify your email address."),
+                      "We've sent you an email verification to ${AuthService.firebase().currentUser?.email}.\n\nPlease verify your email address."),
                 ),
                 const SizedBox(height: 15),
                 const SizedBox(
@@ -37,26 +36,14 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 // Request Firebase to send an email verification
                 OutlinedButton(
                   onPressed: () async {
-                    final user = FirebaseAuth.instance.currentUser;
-                    await user?.sendEmailVerification();
+                    await AuthService.firebase().sendEmailVerification();
+                    await AuthService.firebase().logOut();
                   },
                   child: const Text('Send email verification.'),
                 ),
                 const SizedBox(
                   height: 15,
                 ),
-                TextButton(
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        loginRoute,
-                        (route) => false,
-                      );
-                    }
-                  },
-                  child: const Text('Sign out and return to the login page.'),
-                )
               ],
             ),
           )
