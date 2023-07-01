@@ -8,8 +8,8 @@ name: Flutter Application CI
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
+#   pull_request:
+#     branches: ["main"]
 
 jobs:
   build_web:
