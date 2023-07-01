@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:notes_app/constants/routes.dart';
 import 'package:notes_app/enums/menu_action.dart';
 import 'package:notes_app/services/auth/auth_services.dart';
+import 'package:notes_app/style/widget_builder.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -15,8 +16,8 @@ class _NotesViewState extends State<NotesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notes'),
+      appBar: appBarBuilder(
+        title: 'Notes',
         actions: [
           /// Define a popup menu that allows the user to log out
           PopupMenuButton<MenuAction>(

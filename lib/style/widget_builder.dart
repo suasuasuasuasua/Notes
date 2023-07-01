@@ -45,3 +45,11 @@ Widget textFormBuilder(
     ],
   );
 }
+
+AppBar appBarBuilder({required String title, actions}) {
+  return AppBar(
+    title: Text(title),
+    actions: actions,
+    centerTitle: true,
+  );
+}

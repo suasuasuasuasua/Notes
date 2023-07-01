@@ -3,7 +3,7 @@ import 'package:notes_app/constants/routes.dart';
 import 'package:notes_app/services/auth/auth_exceptions.dart';
 import 'package:notes_app/services/auth/auth_services.dart';
 
-import 'package:notes_app/util/widget_builder.dart';
+import 'package:notes_app/style/widget_builder.dart';
 import 'package:notes_app/views/dialogue_popups.dart';
 
 class RegisterView extends StatefulWidget {
@@ -37,9 +37,7 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
+      appBar: appBarBuilder(title: 'Register'),
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
@@ -96,9 +94,9 @@ class _RegisterViewState extends State<RegisterView> {
                       throw PasswordsNotMatching();
                     }
 
-                    /// Send an email verification to the user before they are
-                    /// taken to the next page
-                    await AuthService.firebase().sendEmailVerification();
+                    // /// Send an email verification to the user before they are
+                    // /// taken to the next page
+                    // await AuthService.firebase().sendEmailVerification();
 
                     /// After a successful registration, the user needs to
                     /// confirm their email
