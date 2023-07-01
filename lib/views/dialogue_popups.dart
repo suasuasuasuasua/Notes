@@ -5,7 +5,7 @@ void displaySnackbar(BuildContext context, String snackbarMessage) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         key: const Key('registration_snackbar'),
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 1),
         content: Center(
           child: Text(
             snackbarMessage,

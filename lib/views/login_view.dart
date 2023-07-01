@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:notes_app/constants/routes.dart';
 import 'package:notes_app/services/auth/auth_services.dart';
-import 'package:notes_app/util/widget_builder.dart';
+import 'package:notes_app/style/widget_builder.dart';
 import 'package:notes_app/views/dialogue_popups.dart';
 
 class LoginView extends StatefulWidget {
@@ -19,6 +19,7 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+
     super.initState();
   }
 
@@ -32,9 +33,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
+      appBar: appBarBuilder(title: 'Sign in'),
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(

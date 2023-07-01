@@ -51,20 +51,21 @@ void main() {
       passwordField = find.byKey(const Key(passwordTextfieldKey)),
       signinButton = find.byKey(const Key(signinButtonKey));
 
-  /// Define a function that tests inputs on the fields and validates assertions
-  testField(WidgetTester tester,
-      {required Finder testedField,
-      required String testMessage,
-      required String? errorMessage}) async {
-    await tester.enterText(testedField, testMessage);
-    await tester.pump(const Duration(seconds: 10));
-    await tester.tap(signinButton);
-    await tester.pump(const Duration(seconds: 10));
-    expect(
-        find.descendant(
-            of: testedField, matching: find.text(errorMessage ?? '')),
-        (errorMessage == null) ? findsNothing : findsOneWidget);
-  }
+  // /// Define a function that tests inputs on the fields and validates assertions
+  // testField(WidgetTester tester,
+  //     {required Finder testedField,
+  //     required String testMessage,
+  //     required String? errorMessage}) async {
+
+  //   await tester.enterText(testedField, testMessage);
+  //   await tester.pump(const Duration(seconds: 10));
+  //   await tester.tap(signinButton);
+  //   await tester.pump(const Duration(seconds: 10));
+  //   expect(
+  //       find.descendant(
+  //           of: testedField, matching: find.text(errorMessage ?? '')),
+  //       (errorMessage == null) ? findsNothing : findsOneWidget);
+  // }
 
   group('Initial Build Verification', () {
     testWidgets('Verify text fields and buttons are present',
