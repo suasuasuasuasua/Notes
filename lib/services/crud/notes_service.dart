@@ -73,7 +73,7 @@ class NotesService {
     return DatabaseUser(id: userId, email: email);
   }
 
-  /// Delete a user from the user given their email
+  /// Delete a user from the table given their email
   Future<void> deleteUser({required String email}) async {
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
@@ -113,13 +113,13 @@ class NotesService {
   Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
     final db = _getDatabaseOrThrow();
 
-    // Ensure that the owner exists with the correct id
+    // Ensure that the owner exists in the database in the first place
     final dbUser = await getUser(email: owner.email);
     if (dbUser != owner) {
       throw CouldNotFindUserException();
     }
 
-    /// Create the note in the table
+    /// Create the note in the table with empty text
     const text = '';
     final noteId = await db.insert(noteTable,
         {userIdColumn: owner.id, textColumn: text, isSyncedColumn: true});
