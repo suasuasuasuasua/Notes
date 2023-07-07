@@ -43,20 +43,22 @@ class _LoginViewState extends State<LoginView> {
             ),
 
             /// Email textfield
-            textFormBuilder(
+            textFieldBuilder(
               context: context,
               label: 'Email',
               controller: _emailController,
               key: 'emailTextfield',
+              inputType: TextInputType.emailAddress,
             ),
 
             /// Password textfield
-            textFormBuilder(
+            textFieldBuilder(
               context: context,
               label: 'Password',
               controller: _passwordController,
               key: 'passwordTextfield',
               hidden: true,
+              inputType: TextInputType.multiline,
             ),
 
             /// A button that signs the user in with the given credentials
