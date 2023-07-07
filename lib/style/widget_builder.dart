@@ -1,29 +1,32 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+final isTargetMobile = defaultTargetPlatform == TargetPlatform.iOS ||
+    defaultTargetPlatform == TargetPlatform.android;
+
 /// A function that returns a textform with initialized parameters
-Widget textFormBuilder(
+Widget textFieldBuilder(
     {required BuildContext context,
     required String label,
     required TextEditingController controller,
     required String key,
+    required TextInputType inputType,
     bool hidden = false}) {
   return Column(
     children: [
       Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-              maxWidth: switch (defaultTargetPlatform) {
-            TargetPlatform.iOS ||
-            TargetPlatform.android =>
-              MediaQuery.of(context).size.width * 0.8,
-            _ => (kIsWeb &&
-                    (defaultTargetPlatform == TargetPlatform.iOS ||
-                        defaultTargetPlatform == TargetPlatform.android))
-                ? MediaQuery.of(context).size.width * 0.8
-                : 400.0
-          }),
-          child: TextFormField(
+              // Set the max width of the text field to 80% of the screen width
+              // if the user is viewing from a mobile device. Else, set it to
+              // 400. However, if the user is viewing the webpage from a mobile
+              // device, then
+              maxWidth: (isTargetMobile)
+                  ? MediaQuery.of(context).size.width * 0.8
+                  : (kIsWeb && isTargetMobile
+                      ? MediaQuery.of(context).size.width * 0.8
+                      : 200.0)),
+          child: TextField(
             decoration: InputDecoration(
               floatingLabelStyle: const TextStyle(fontSize: 11),
               labelText: label,
@@ -34,7 +37,7 @@ Widget textFormBuilder(
             ),
             controller: controller,
             key: Key(key),
-            keyboardType: TextInputType.emailAddress,
+            keyboardType: inputType,
             enableSuggestions: false,
             autocorrect: false,
             obscureText: hidden,

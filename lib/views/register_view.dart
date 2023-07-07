@@ -47,29 +47,32 @@ class _RegisterViewState extends State<RegisterView> {
             ),
 
             /// Email Field
-            textFormBuilder(
+            textFieldBuilder(
               context: context,
               label: 'Email',
               controller: _emailController,
               key: 'emailTextfield',
+              inputType: TextInputType.emailAddress,
             ),
 
             /// Password Field
-            textFormBuilder(
+            textFieldBuilder(
               context: context,
               label: 'Password',
               controller: _passwordController,
               key: 'passwordTextfield',
               hidden: true,
+              inputType: TextInputType.multiline,
             ),
 
             /// Confirm Password Field
-            textFormBuilder(
+            textFieldBuilder(
               context: context,
               label: 'Confirm password',
               controller: _confirmPasswordController,
               key: 'confirmTextfield',
               hidden: true,
+              inputType: TextInputType.multiline,
             ),
 
             /// Registration button
