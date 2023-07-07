@@ -25,7 +25,7 @@ Widget textFieldBuilder(
                   ? MediaQuery.of(context).size.width * 0.8
                   : (kIsWeb && isTargetMobile
                       ? MediaQuery.of(context).size.width * 0.8
-                      : 200.0)),
+                      : 450.0)),
           child: TextField(
             decoration: InputDecoration(
               floatingLabelStyle: const TextStyle(fontSize: 11),
